@@ -42,9 +42,7 @@ class Panel extends React.Component {
                         onClick={()=>{this.search()}}>查询
                     </button>
                 </div>
-                <div className="con-wrap">
-                    <List list={this.state.list} />
-                </div>
+                <List list={this.state.list}/>
             </div>
         )
     }

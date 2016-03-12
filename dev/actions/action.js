@@ -6,7 +6,7 @@ import AppDispatcher from '../dispatcher/dispatcher'
 
 class Action {
 
-    static showPanel(activeTabName) {
+    static showPanel() {
         AppDispatcher.dispatch({
             actionType: AppConstants.SHOW_PANEL
         })
