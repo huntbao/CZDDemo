@@ -2,15 +2,19 @@
 'use strict'
 
 import './panel.styl'
+import querystring from 'querystring'
 import React from 'react'
+import JSONP from 'jsonp'
 import Action from '../../actions/action'
+import List from '../list/list.jsx'
 
 class Panel extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             keyword: '',
-            wenhao: ''
+            wenhao: '',
+            list: TESTDATA.data
         }
     }
 
@@ -38,7 +42,9 @@ class Panel extends React.Component {
                         onClick={()=>{this.search()}}>查询
                     </button>
                 </div>
-                <div className="con-wrap"></div>
+                <div className="con-wrap">
+                    <List list={this.state.list} />
+                </div>
             </div>
         )
     }
@@ -56,7 +62,13 @@ class Panel extends React.Component {
     }
 
     search() {
-
+        //let params = querystring.stringify({page: 1, query1: this.state.keyword, query2: this.state.wenhao});
+        //JSONP('http://www.5czd.com/api/law_search?' + params, {}, function (err, data) {
+        //
+        //})
+        this.setState({
+            list: TESTDATA.data
+        })
     }
 
 }
