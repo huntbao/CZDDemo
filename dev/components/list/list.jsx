@@ -12,9 +12,10 @@ class List extends React.Component {
         this.state = {
             data: [],
             offset: 0,
-            article: ATESTDATA.data,
-            selRect: null
+            article: ATESTDATA.data
         }
+        this.pageX = null
+        this.pageY = null
     }
 
     getListNode() {
@@ -58,27 +59,19 @@ class List extends React.Component {
     getArticleNode() {
         let nodes = this.state.article.dataList.map((lt) => {
             return (
-                <div className="line" id={lt.id}>
-                    <p className="para" dangerouslySetInnerHTML={{__html: lt.title}}></p>
+                <div className="line">
+                    <p className="para" dangerouslySetInnerHTML={{__html: lt.title}} id={lt.id}></p>
                     <em className="insert" onClick={()=>{this.insert(lt, lt.title)}}>插入</em>
                 </div>
             )
         })
-        let globalInsert
-        if (this.state.selRect) {
-            let insertStyle = {
-                top: this.state.selRect.top + 'px',
-                left: this.state.selRect.left + 'px',
-            }
-            globalInsert = (
-                <div className="global-insert" style={insertStyle}>插入</div>
-            )
-        }
         return (
-            <div className="mod-article" onMouseUp={(e) => {this.mouseUp(e)}}>
+            <div className="mod-article"
+                 onMouseUp={(e) => {this.mouseUp(e)}}
+                 onMouseDown={(e) => {this.mouseDown(e)}}
+            >
                 <div className="title">{this.state.article.title}</div>
                 {nodes}
-                {globalInsert}
             </div>
         )
     }
@@ -106,36 +99,70 @@ class List extends React.Component {
         })
     }
 
-    insert(list, title) {
+    getHtmlMarkup(list, text) {
         let htmlMarkup = `<p style="padding:4px;background-color:#e5e5e5;margin:0 0 4px;">`
         htmlMarkup += `<a style="color:#5f86bd" href=${'/fagui/detail/' + list.id}>${list.title}</a>&nbsp;&nbsp;`
         htmlMarkup += `<span>${list.publish_date}</span>&nbsp;&nbsp;`
-        htmlMarkup += `<span style="color: #00b70f;">${list.jiedu_count}解读</span>&nbsp;&nbsp;`
-        htmlMarkup += `<span style="color: #00b70f;">${list.fagui_status}问答</span>`
-        if (title) {
-            htmlMarkup += `<br/>${title}<a style="color:#5f86bd" href=${'/fagui/detail/' + list.id}>前往>></a>`
+        htmlMarkup += `<span style="color:#00b70f;">${list.jiedu_count}解读</span>&nbsp;&nbsp;`
+        htmlMarkup += `<span style="color:#00b70f;">${list.fagui_status}问答</span>`
+        if (text) {
+            htmlMarkup += `<br/>${text}<a style="color:#5f86bd" href=${'/fagui/detail/' + list.id}>前往>></a>`
         }
-        htmlMarkup += `</p>`
+        htmlMarkup += `</p><br/>`
+        return htmlMarkup
+    }
+
+    insert(list, title) {
+        let htmlMarkup = this.getHtmlMarkup(list, title)
         let editor = UE.getEditor('mod-editor')
-        editor.execCommand('inserthtml', htmlMarkup)
+        editor.setContent(htmlMarkup, !!editor.getContent())
     }
 
     mouseUp(e) {
-        var sel = window.getSelection()
-        var selectedText = sel.toString().trim()
-        var boundingClientRect
-        if (selectedText) {
-            var r = sel.getRangeAt(0)
-            if (r.collapsed) {
-
-            } else {
-                boundingClientRect = r.getBoundingClientRect()
+        let pageX = e.pageX || e.offsetX
+        let pageY = e.pageY || e.offsetY
+        setTimeout(() => {
+            let sel = window.getSelection()
+            let selectedText = sel.toString().trim()
+            let clientRect
+            let endNodeId
+            if (selectedText) {
+                var r = sel.getRangeAt(0)
+                if (!r.collapsed) {
+                    clientRect = r.getBoundingClientRect()
+                    endNodeId = r.endContainer.parentNode.id
+                }
             }
-        }
-        console.log(boundingClientRect)
-        this.setState({
-            selRect: boundingClientRect
-        })
+            if (clientRect) {
+                let pos = {}
+                if (pageX > this.pageX) {
+                    // from left to right
+                    pos.left = pageX;
+                } else {
+                    // from right to left
+                    pos.left = pageX - 40;
+                }
+                if (pageY > this.pageY) {
+                    // from top to bottom
+                    pos.top = pageY;
+                } else {
+                    // from bottom to top
+                    pos.top = pageY - 18;
+                }
+                let list = this.state.article.dataList.find((lt) => {
+                    return lt.id === endNodeId
+                })
+                pos.text = this.getHtmlMarkup(list, selectedText)
+                this.props.setSelRect(pos)
+            } else {
+                this.props.setSelRect(null)
+            }
+        }, 0)
+    }
+
+    mouseDown(e) {
+        this.pageX = e.pageX || e.offsetX
+        this.pageY = e.pageY || e.offsetY
     }
 
 }

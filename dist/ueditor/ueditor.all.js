@@ -1143,12 +1143,12 @@ var utils = UE.utils = {
             } else {
                 doc.isReady && doReady(doc);
                 if (browser.ie && browser.version != 11) {
-                    (function a() {
+                    (function func() {
                         if (doc.isReady) return;
                         try {
                             doc.documentElement.doScroll("left");
                         } catch (error) {
-                            setTimeout(a, 0);
+                            setTimeout(func, 0);
                             return;
                         }
                         doReady(doc);
@@ -1157,8 +1157,8 @@ var utils = UE.utils = {
                         doReady(doc)
                     });
                 } else {
-                    doc.addEventListener("DOMContentLoaded", function a() {
-                        doc.removeEventListener("DOMContentLoaded", a, false);
+                    doc.addEventListener("DOMContentLoaded", function func() {
+                        doc.removeEventListener("DOMContentLoaded", func, false);
                         doReady(doc);
                     }, false);
                     win.addEventListener('load', function () {

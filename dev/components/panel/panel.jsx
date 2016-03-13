@@ -42,7 +42,7 @@ class Panel extends React.Component {
                         onClick={()=>{this.search()}}>查询
                     </button>
                 </div>
-                <List list={this.state.list}/>
+                <List list={this.state.list} setSelRect={this.props.setSelRect}/>
             </div>
         )
     }
