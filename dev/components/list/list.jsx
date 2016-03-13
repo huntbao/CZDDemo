@@ -149,10 +149,10 @@ class List extends React.Component {
                     // from bottom to top
                     pos.top = pageY - 18;
                 }
-                let list = this.state.article.dataList.find((lt) => {
+                let lists = this.state.article.dataList.filter((lt) => {
                     return lt.id === endNodeId
                 })
-                pos.text = this.getHtmlMarkup(list, selectedText)
+                pos.text = this.getHtmlMarkup(lists[0], selectedText)
                 this.props.setSelRect(pos)
             } else {
                 this.props.setSelRect(null)
