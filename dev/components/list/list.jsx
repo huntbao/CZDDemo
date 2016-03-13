@@ -33,7 +33,7 @@ class List extends React.Component {
                         <a className="title"
                            dangerouslySetInnerHTML={{__html: lt.title}}
                            href={'/fagui/detail/'+lt.id}></a>
-                        <em className="insert" onClick={()=>{this.insert(lt)}}>插入</em>
+                        <div className="insert" onClick={()=>{this.insert(lt)}}>插入</div>
                     </div>
                 )
             })
@@ -70,6 +70,7 @@ class List extends React.Component {
                  onMouseUp={(e) => {this.mouseUp(e)}}
                  onMouseDown={(e) => {this.mouseDown(e)}}
             >
+                <div className="close-btn" onClick={(e) => {this.closeArticle(e)}}>×</div>
                 <div className="title">{this.state.article.title}</div>
                 {nodes}
             </div>
@@ -165,6 +166,13 @@ class List extends React.Component {
     mouseDown(e) {
         this.pageX = e.pageX || e.offsetX
         this.pageY = e.pageY || e.offsetY
+    }
+
+    closeArticle(e) {
+        e.preventDefault()
+        this.setState({
+            article: null
+        })
     }
 
 }

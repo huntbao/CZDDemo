@@ -20,29 +20,38 @@ class Panel extends React.Component {
 
     render() {
         return (
-            <div className="mod-panel">
-                <div className="search-wrap">
-                    <input
-                        type="text"
-                        className="inp key-inp"
-                        placeholder="关键词"
-                        value={this.state.keyword}
-                        onChange={(e)=>{this.handleChangeKeyword(e)}}
-                    />
-                    <input
-                        type="text"
-                        className="inp wh-inp"
-                        placeholder="文号, 如2010 79"
-                        value={this.state.wenhao}
-                        onChange={(e)=>{this.handleChangeWenhao(e)}}
-                    />
-                    <button
-                        type="button"
-                        className="btn"
-                        onClick={()=>{this.search()}}>查询
-                    </button>
+            <div className="panel-wrap">
+                <div className="mod-panel">
+                    <div className="search-wrap">
+                        <input
+                            type="text"
+                            className="inp key-inp"
+                            placeholder="关键词"
+                            value={this.state.keyword}
+                            onChange={(e)=>{this.handleChangeKeyword(e)}}
+                        />
+                        <input
+                            type="text"
+                            className="inp wh-inp"
+                            placeholder="文号, 如2010 79"
+                            value={this.state.wenhao}
+                            onChange={(e)=>{this.handleChangeWenhao(e)}}
+                        />
+                        <button
+                            type="button"
+                            className="btn"
+                            onClick={()=>{this.search()}}>查询
+                        </button>
+                    </div>
+                    <List list={this.state.list} setSelRect={this.props.setSelRect}/>
                 </div>
-                <List list={this.state.list} setSelRect={this.props.setSelRect}/>
+                <div className="btn-group">
+                    <div className="btn">收藏</div>
+                    <div className="btn">法规</div>
+                    <div className="btn active">理论</div>
+                    <div className="btn">问答</div>
+                    <a href="/more" className="more">更多</a>
+                </div>
             </div>
         )
     }

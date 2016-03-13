@@ -12,7 +12,6 @@
     padding-left: 0;
     border-radius: 4px;
     font-size: 12px
-    float: right;
 
     > li {
       float: left
@@ -145,5 +144,27 @@
     text-align: center;
     opacity: 0;
     transition: all ease .3s;
+  }
+
+  .close-btn {
+    font-size: 20px!important;
+    font-weight: 700!important;
+    line-height: 30px!important;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: .2;
+    cursor: pointer;
+    border: none;
+    background: 0 0;
+    margin: 0;
+    padding: 0;
+    position: absolute
+    right:-10px;
+    top:-10px;
+    transition all ease .3s;
+
+    &:hover {
+      opacity:.5
+    }
   }
 }
