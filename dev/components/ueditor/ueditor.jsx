@@ -28,7 +28,7 @@ class UEditor extends React.Component {
             var btn = new UE.ui.Button({
                 name: uiName,
                 title: '插入法规',
-                cssRules: 'background: url(/dist/ueditor/law.png) no-repeat 50% 50% !important;',
+                cssRules: `background: url(${window.UEDITOR_CONFIG.UEDITOR_HOME_URL}/law.png) no-repeat 50% 50% !important;`,
                 onclick: function() {
                     editor.execCommand(uiName);
                 }

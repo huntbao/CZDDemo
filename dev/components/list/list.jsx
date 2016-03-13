@@ -152,8 +152,10 @@ class List extends React.Component {
                 let lists = this.state.article.dataList.filter((lt) => {
                     return lt.id === endNodeId
                 })
-                pos.text = this.getHtmlMarkup(lists[0], selectedText)
-                this.props.setSelRect(pos)
+                if(lists[0]) {
+                    pos.text = this.getHtmlMarkup(lists[0], selectedText)
+                    this.props.setSelRect(pos)
+                }
             } else {
                 this.props.setSelRect(null)
             }
