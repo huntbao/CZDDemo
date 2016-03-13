@@ -61,7 +61,7 @@ class List extends React.Component {
             return (
                 <div className="line">
                     <p className="para" dangerouslySetInnerHTML={{__html: lt.title}} id={lt.id}></p>
-                    <em className="insert" onClick={()=>{this.insert(lt, lt.title)}}>插入</em>
+                    <div className="insert" onClick={()=>{this.insert(lt, lt.title)}}>插入</div>
                 </div>
             )
         })
