@@ -1,9 +1,14 @@
 //author @huntbao
 .panel-wrap {
   position: absolute;
-  left: 730px;
+  left: 9999px;
   top: 10px;
   width: 640px;
+  transition: all ease .2s;
+
+  &.show {
+    left: 730px;
+  }
 
   .mod-panel {
     border: 1px solid #ccc;
@@ -119,8 +124,8 @@
     margin: 0;
     padding: 0;
     position: absolute
-    right: -10px;
-    top: -10px;
+    right: 3px;
+    top: 0;
     transition all ease .3s;
 
     &:hover {

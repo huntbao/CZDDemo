@@ -5,6 +5,7 @@ import './index.styl'
 import React from 'react'
 import UEditor from '../ueditor/ueditor.jsx'
 import Panel from '../panel/panel.jsx'
+import Store from '../../stores/store'
 
 class Index extends React.Component {
 
@@ -13,6 +14,26 @@ class Index extends React.Component {
         this.state = {
             selRect: null
         }
+    }
+
+    getAppStates() {
+        return Object.assign({}, Store.get())
+    }
+
+    componentDidMount() {
+        Store.addChangeListener(()=> {
+            this.onChange()
+        })
+    }
+
+    componentWillUnmount() {
+        Store.removeChangeListener(()=> {
+            this.onChange()
+        })
+    }
+
+    onChange() {
+        this.setState(this.getAppStates())
     }
 
     render() {
@@ -29,7 +50,10 @@ class Index extends React.Component {
         return (
             <div className="main-wrap">
                 <UEditor />
-                <Panel setSelRect={(rect) => {this.setSelRect(rect)}} />
+                <Panel
+                    setSelRect={(rect) => {this.setSelRect(rect)}}
+                    show={this.state.showPanel}
+                />
                 {globalInsert}
             </div>
         )

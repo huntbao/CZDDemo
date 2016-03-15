@@ -9,16 +9,18 @@ import Action from '../../actions/action'
 import List from '../list/list.jsx'
 import util from '../../libs/util'
 
+let initState = {
+    keyword: '',
+    wenhao: '',
+    list: null,
+    cate: 'law',
+    isLoading: false
+}
+
 class Panel extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {
-            keyword: '',
-            wenhao: '',
-            list: null,
-            cate: 'law',
-            isLoading: false
-        }
+        this.state = initState
     }
 
     render() {
@@ -26,8 +28,16 @@ class Panel extends React.Component {
             'mod-panel': true,
             'loading-tip': this.state.isLoading
         })
+        let panelWrapClasses = classnames({
+            'panel-wrap': true,
+            'show': this.props.show
+        })
+        if (!this.props.show) {
+            // if hide panel
+            this.setState(initState)
+        }
         return (
-            <div className={`panel-wrap ${this.state.cate}`}>
+            <div className={panelWrapClasses + ` ${this.state.cate}`}>
                 <div className={modPanelClasses}>
                     <div className="search-wrap">
                         <input
@@ -58,6 +68,7 @@ class Panel extends React.Component {
                         loadList={(pageOffset) => {this.loadList(pageOffset)}}
                     />
                     <div className="loading"></div>
+                    <div className="close-btn" onClick={(e) => {this.close(e)}}>×</div>
                 </div>
                 <div className="btn-group">
                     <div className="btn favorite" onClick={(e) => {this.clickCategory(e, 'favorite')}}>收藏</div>
@@ -104,6 +115,10 @@ class Panel extends React.Component {
             cate: cate,
             list: null
         })
+    }
+
+    close(e) {
+        Action.hidePanel()
     }
 
 }

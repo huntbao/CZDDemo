@@ -12,6 +12,12 @@ class Action {
         })
     }
 
+    static hidePanel() {
+        AppDispatcher.dispatch({
+            actionType: AppConstants.HIDE_PANEL
+        })
+    }
+
 }
 
 export default Action
