@@ -16,6 +16,7 @@ class Panel extends React.Component {
             keyword: '',
             wenhao: '',
             list: null,
+            cate: 'law',
             isLoading: false
         }
     }
@@ -26,7 +27,7 @@ class Panel extends React.Component {
             'loading-tip': this.state.isLoading
         })
         return (
-            <div className="panel-wrap">
+            <div className={`panel-wrap ${this.state.cate}`}>
                 <div className={modPanelClasses}>
                     <div className="search-wrap">
                         <input
@@ -59,10 +60,10 @@ class Panel extends React.Component {
                     <div className="loading"></div>
                 </div>
                 <div className="btn-group">
-                    <div className="btn">收藏</div>
-                    <div className="btn">法规</div>
-                    <div className="btn active">理论</div>
-                    <div className="btn">问答</div>
+                    <div className="btn favorite" onClick={(e) => {this.clickCategory(e, 'favorite')}}>收藏</div>
+                    <div className="btn law" onClick={(e) => {this.clickCategory(e, 'law')}}>法规</div>
+                    <div className="btn theory" onClick={(e) => {this.clickCategory(e, 'theory')}}>理论</div>
+                    <div className="btn qa" onClick={(e) => {this.clickCategory(e, 'qa')}}>问答</div>
                     <a href="/more" className="more">更多</a>
                 </div>
             </div>
@@ -95,6 +96,13 @@ class Panel extends React.Component {
                     isLoading: false
                 })
             })
+        })
+    }
+
+    clickCategory(e, cate) {
+        this.setState({
+            cate: cate,
+            list: null
         })
     }
 
