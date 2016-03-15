@@ -18,7 +18,7 @@ module.exports = {
                 loader: 'style-loader!css-loader!stylus-loader'
             },
             {
-                test: /\.png$/,
+                test: /\.png|\.gif$/,
                 exclude: /(node_modules)/,
                 loader: "url-loader?limit=100000"
             }

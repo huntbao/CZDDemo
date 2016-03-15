@@ -4,6 +4,7 @@
 import './list.styl'
 import React from 'react'
 import ReactPaginate from 'react-paginate'
+import util from '../../libs/util'
 
 class List extends React.Component {
 
@@ -11,15 +12,29 @@ class List extends React.Component {
         super(props)
         this.state = {
             data: [],
-            offset: 0,
-            article: ATESTDATA.data
+            article: null,
+            initialSelected: 0
         }
         this.pageX = null
         this.pageY = null
     }
 
+    getListTip(msg) {
+        let tipNode = (
+            <div className="list-tip">{msg || `请输入要查询的信息, 点"查询"按钮查看结果`}</div>
+        )
+        return tipNode
+    }
+
     getListNode() {
         let list = this.props.list;
+        if (!list) {
+            return this.getListTip()
+        }
+        if (list._code === '500') {
+            return this.getListTip(list.message)
+        }
+        list = list.data;
         let pageNum = Math.ceil(list.total / list.pageSize)
         let listNodes
         if (list && list.length) {
@@ -32,15 +47,18 @@ class List extends React.Component {
                         </div>
                         <a className="title"
                            dangerouslySetInnerHTML={{__html: lt.title}}
-                           href={'/fagui/detail/'+lt.id}></a>
+                           href={'/fagui/detail/'+lt.id}
+                           title={lt.title}
+                           onClick={(e) => {this.loadArticle(e, lt.id)}}
+                        ></a>
                         <div className="insert" onClick={()=>{this.insert(lt)}}>插入</div>
                     </div>
                 )
             })
         }
-        return (
-            <div className="mod-list">
-                {listNodes}
+        let pagination
+        if (pageNum > 1) {
+            pagination =
                 <ReactPaginate
                     previousLabel={"上一页"}
                     nextLabel={"下一页"}
@@ -51,9 +69,25 @@ class List extends React.Component {
                     clickCallback={(data) => {this.handlePageClick(data)}}
                     containerClassName={"pagination"}
                     subContainerClassName={"pages pagination"}
-                    activeClassName={"active"}/>
+                    activeClassName={"active"}
+                    initialSelected={this.state.initialSelected}
+                />
+        }
+        return (
+            <div className="mod-list">
+                {listNodes}
+                {pagination}
             </div>
         )
+    }
+
+    loadArticle(e, articleId) {
+        e.preventDefault()
+        util.loadArticle(articleId, (data) => {
+            this.setState({
+                article: data
+            })
+        })
     }
 
     getArticleNode() {
@@ -70,7 +104,7 @@ class List extends React.Component {
                  onMouseUp={(e) => {this.mouseUp(e)}}
                  onMouseDown={(e) => {this.mouseDown(e)}}
             >
-                <div className="close-btn" onClick={(e) => {this.closeArticle(e)}}>×</div>
+                <a className="back-btn" onClick={(e) => {this.closeArticle(e)}}>>>返回</a>
                 <div className="title">{this.state.article.title}</div>
                 {nodes}
             </div>
@@ -93,11 +127,10 @@ class List extends React.Component {
 
     handlePageClick(data) {
         let selected = data.selected;
-        let offset = Math.ceil(selected * 10);
-
-        this.setState({offset: offset}, () => {
-            this.loadCommentsFromServer()
+        this.setState({
+            initialSelected: selected
         })
+        this.props.loadList(selected + 1)
     }
 
     getHtmlMarkup(list, text) {
@@ -109,7 +142,7 @@ class List extends React.Component {
         if (text) {
             htmlMarkup += `<br/>${text}<a style="color:#5f86bd" href=${'/fagui/detail/' + list.id}>前往>></a>`
         }
-        htmlMarkup += `</p><br/>`
+        htmlMarkup += `</p>`
         return htmlMarkup
     }
 

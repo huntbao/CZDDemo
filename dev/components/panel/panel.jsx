@@ -4,9 +4,10 @@
 import './panel.styl'
 import querystring from 'querystring'
 import React from 'react'
-import JSONP from 'jsonp'
+import classnames from 'classnames'
 import Action from '../../actions/action'
 import List from '../list/list.jsx'
+import util from '../../libs/util'
 
 class Panel extends React.Component {
     constructor(props) {
@@ -14,20 +15,26 @@ class Panel extends React.Component {
         this.state = {
             keyword: '',
             wenhao: '',
-            list: TESTDATA.data
+            list: null,
+            isLoading: false
         }
     }
 
     render() {
+        let modPanelClasses = classnames({
+            'mod-panel': true,
+            'loading-tip': this.state.isLoading
+        })
         return (
             <div className="panel-wrap">
-                <div className="mod-panel">
+                <div className={modPanelClasses}>
                     <div className="search-wrap">
                         <input
                             type="text"
                             className="inp key-inp"
                             placeholder="关键词"
                             value={this.state.keyword}
+                            onKeyDown={(e) => {this.keydown(e)}}
                             onChange={(e)=>{this.handleChangeKeyword(e)}}
                         />
                         <input
@@ -35,15 +42,21 @@ class Panel extends React.Component {
                             className="inp wh-inp"
                             placeholder="文号, 如2010 79"
                             value={this.state.wenhao}
+                            onKeyDown={(e) => {this.keydown(e)}}
                             onChange={(e)=>{this.handleChangeWenhao(e)}}
                         />
                         <button
                             type="button"
                             className="btn"
-                            onClick={()=>{this.search()}}>查询
+                            onClick={()=>{this.loadList(1)}}>查询
                         </button>
                     </div>
-                    <List list={this.state.list} setSelRect={this.props.setSelRect}/>
+                    <List
+                        list={this.state.list}
+                        setSelRect={this.props.setSelRect}
+                        loadList={(pageOffset) => {this.loadList(pageOffset)}}
+                    />
+                    <div className="loading"></div>
                 </div>
                 <div className="btn-group">
                     <div className="btn">收藏</div>
@@ -68,13 +81,20 @@ class Panel extends React.Component {
         })
     }
 
-    search() {
-        //let params = querystring.stringify({page: 1, query1: this.state.keyword, query2: this.state.wenhao});
-        //JSONP('http://www.5czd.com/api/law_search?' + params, {}, function (err, data) {
-        //
-        //})
-        this.setState({
-            list: TESTDATA.data
+    keydown(e) {
+        if (e.keyCode === 13) {
+            this.loadList(1)
+        }
+    }
+
+    loadList(pageOffset) {
+        this.setState({isLoading: true}, () => {
+            util.loadList(pageOffset, this.state.keyword, this.state.wenhao, (data) => {
+                this.setState({
+                    list: data,
+                    isLoading: false
+                })
+            })
         })
     }
 
