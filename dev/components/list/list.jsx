@@ -127,6 +127,10 @@ class List extends React.Component {
 
     handlePageClick(data) {
         let selected = data.selected;
+        // init pagination will call this func, this maybe a bug
+        if (this.state.initialSelected === selected) {
+            return;
+        }
         this.setState({
             initialSelected: selected
         })
