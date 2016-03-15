@@ -113,7 +113,7 @@ class List extends React.Component {
 
     render() {
         let contentNode
-        if (this.state.article) {
+        if (this.state.article && this.props.list) {
             contentNode = this.getArticleNode()
         } else {
             contentNode = this.getListNode()

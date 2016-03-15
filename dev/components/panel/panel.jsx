@@ -34,7 +34,9 @@ class Panel extends React.Component {
         })
         if (!this.props.show) {
             // if hide panel
-            this.setState(initState)
+            setTimeout(() => {
+                this.setState(initState)
+            })
         }
         return (
             <div className={panelWrapClasses + ` ${this.state.cate}`}>
