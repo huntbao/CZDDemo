@@ -68,6 +68,7 @@ class Panel extends React.Component {
                         list={this.state.list}
                         setSelRect={this.props.setSelRect}
                         loadList={(pageOffset) => {this.loadList(pageOffset)}}
+                        toggleLoading={(isLoading) => {this.toggleLoading(isLoading)}}
                     />
                     <div className="loading"></div>
                     <div className="close-btn" onClick={(e) => {this.close(e)}}>×</div>
@@ -117,10 +118,19 @@ class Panel extends React.Component {
             cate: cate,
             list: null
         })
+        Action.setCategory({
+            category: cate
+        })
     }
 
     close(e) {
         Action.hidePanel()
+    }
+
+    toggleLoading(isLoading) {
+        this.setState({
+            isLoading: isLoading
+        })
     }
 
 }

@@ -18,6 +18,13 @@ class Action {
         })
     }
 
+    static setCategory(data) {
+        AppDispatcher.dispatch({
+            actionType: AppConstants.SET_CATEGORY,
+            data: data
+        })
+    }
+
 }
 
 export default Action

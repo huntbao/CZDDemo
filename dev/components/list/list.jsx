@@ -83,7 +83,9 @@ class List extends React.Component {
 
     loadArticle(e, articleId) {
         e.preventDefault()
+        this.props.toggleLoading(true)
         util.loadArticle(articleId, (data) => {
+            this.props.toggleLoading(false)
             this.setState({
                 article: data
             })
@@ -91,11 +93,29 @@ class List extends React.Component {
     }
 
     getArticleNode() {
-        let nodes = this.state.article.dataList.map((lt) => {
+        if ( this.state.article._code !== '200') {
+            return;
+        }
+        let article = this.state.article.data
+        let nodes = article.zhangjieVos.map((zj) => {
+            let zhangjieNodes = zj.duanlist.map((duan) => {
+                return (
+                    <div
+                        className="para"
+                        data-id={duan.id}
+                        data-zhangjieid={duan.zhangjieId}
+                        data-faguiid={duan.faguiId}
+                    >
+                        <div className="title">{duan.title}</div>
+                        <div className="content" dangerouslySetInnerHTML={{__html: duan.content}}></div>
+                        <div className="insert" onClick={()=>{this.insert(zj, zj.title)}}>插入</div>
+                    </div>
+                )
+            })
             return (
-                <div className="line">
-                    <p className="para" dangerouslySetInnerHTML={{__html: lt.title}} id={lt.id}></p>
-                    <div className="insert" onClick={()=>{this.insert(lt, lt.title)}}>插入</div>
+                <div className="zj-line">
+                    <div className="title">{zj.title}</div>
+                    {zhangjieNodes}
                 </div>
             )
         })
@@ -105,7 +125,9 @@ class List extends React.Component {
                  onMouseDown={(e) => {this.mouseDown(e)}}
             >
                 <a className="back-btn" onClick={(e) => {this.closeArticle(e)}}>>>返回</a>
-                <div className="title">{this.state.article.title}</div>
+                <a className="article-title" href={article.faguiSource.link}>{article.faguiSource.title}</a>
+                <span className="wenhao">{article.faguiSource.wenhao}</span>
+                <span className="publishDate">{article.faguiSource.publishDate}</span>
                 {nodes}
             </div>
         )
