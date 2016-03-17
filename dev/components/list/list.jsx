@@ -15,6 +15,7 @@ class List extends React.Component {
             article: null,
             initialSelected: 0
         }
+        this.articleMetadata = null
         this.pageX = null
         this.pageY = null
     }
@@ -49,9 +50,9 @@ class List extends React.Component {
                            dangerouslySetInnerHTML={{__html: lt.title}}
                            href={'/fagui/detail/'+lt.id}
                            title={lt.title}
-                           onClick={(e) => {this.loadArticle(e, lt.id)}}
+                           onClick={(e) => {this.loadArticle(e, lt)}}
                         ></a>
-                        <div className="insert" onClick={()=>{this.insert(lt)}}>插入</div>
+                        <div className="insert" onClick={()=>{this.insertList(lt)}}>插入</div>
                     </div>
                 )
             })
@@ -81,10 +82,11 @@ class List extends React.Component {
         )
     }
 
-    loadArticle(e, articleId) {
+    loadArticle(e, articleMetadata) {
         e.preventDefault()
+        this.articleMetadata = articleMetadata
         this.props.toggleLoading(true)
-        util.loadArticle(articleId, (data) => {
+        util.loadArticle(articleMetadata.id, (data) => {
             this.props.toggleLoading(false)
             this.setState({
                 article: data
@@ -93,7 +95,7 @@ class List extends React.Component {
     }
 
     getArticleNode() {
-        if ( this.state.article._code !== '200') {
+        if (this.state.article._code !== '200') {
             return;
         }
         let article = this.state.article.data
@@ -102,13 +104,11 @@ class List extends React.Component {
                 return (
                     <div
                         className="para"
-                        data-id={duan.id}
-                        data-zhangjieid={duan.zhangjieId}
-                        data-faguiid={duan.faguiId}
+                        id={duan.id}
                     >
                         <div className="title">{duan.title}</div>
                         <div className="content" dangerouslySetInnerHTML={{__html: duan.content}}></div>
-                        <div className="insert" onClick={()=>{this.insert(zj, zj.title)}}>插入</div>
+                        <div className="insert" onClick={()=>{this.insertArticlePara(zj, duan)}}>插入</div>
                     </div>
                 )
             })
@@ -159,23 +159,34 @@ class List extends React.Component {
         this.props.loadList(selected + 1)
     }
 
-    getHtmlMarkup(list, text) {
+    getHtmlMarkup(list, text, textLink) {
         let htmlMarkup = `<p style="padding:4px;background-color:#e5e5e5;margin:0 0 4px;">`
         htmlMarkup += `<a style="color:#5f86bd" href=${'/fagui/detail/' + list.id}>${list.title}</a>&nbsp;&nbsp;`
         htmlMarkup += `<span>${list.publish_date}</span>&nbsp;&nbsp;`
         htmlMarkup += `<span style="color:#00b70f;">${list.jiedu_count}解读</span>&nbsp;&nbsp;`
         htmlMarkup += `<span style="color:#00b70f;">${list.fagui_status}问答</span>`
         if (text) {
-            htmlMarkup += `<br/>${text}<a style="color:#5f86bd" href=${'/fagui/detail/' + list.id}>前往>></a>`
+            htmlMarkup += `<br/>${text}<a style="color:#5f86bd" href=${textLink}>前往>></a>`
         }
         htmlMarkup += `</p>`
         return htmlMarkup
     }
 
-    insert(list, title) {
-        let htmlMarkup = this.getHtmlMarkup(list, title)
+    insertIntoEditor(htmlMarkup) {
         let editor = UE.getEditor('mod-editor')
         editor.setContent(htmlMarkup, !!editor.getContent())
+    }
+
+    insertList(list) {
+        let htmlMarkup = this.getHtmlMarkup(list)
+        this.insertIntoEditor(htmlMarkup)
+    }
+
+    insertArticlePara(zhangjie, duan) {
+        let text = `${zhangjie.title}<br/>${duan.title}<br/>${duan.content}`
+        let textLink = `/fagui/detail/${duan.id}`
+        let htmlMarkup = this.getHtmlMarkup(this.articleMetadata, text, textLink)
+        this.insertIntoEditor(htmlMarkup)
     }
 
     mouseUp(e) {
@@ -190,7 +201,14 @@ class List extends React.Component {
                 var r = sel.getRangeAt(0)
                 if (!r.collapsed) {
                     clientRect = r.getBoundingClientRect()
-                    endNodeId = r.endContainer.parentNode.id
+                    let node = r.endContainer
+                    while (true) {
+                        if (node.className === 'para') {
+                            endNodeId = node.id
+                            break
+                        }
+                        node = node.parentNode
+                    }
                 }
             }
             if (clientRect) {
@@ -209,11 +227,20 @@ class List extends React.Component {
                     // from bottom to top
                     pos.top = pageY - 18;
                 }
-                let lists = this.state.article.dataList.filter((lt) => {
-                    return lt.id === endNodeId
+                let duan
+                let text = ''
+                this.state.article.data.zhangjieVos.find((zj) => {
+                    duan = zj.duanlist.find((duan) => {
+                        return duan.id === endNodeId
+                    })
+                    if (duan) {
+                        text = `${zj.title}<br/>${duan.title}<br/>`
+                        return true
+                    }
                 })
-                if(lists[0]) {
-                    pos.text = this.getHtmlMarkup(lists[0], selectedText)
+                if (duan) {
+                    let textLink = `/fagui/detail/${duan.id}`
+                    pos.text = this.getHtmlMarkup(this.articleMetadata, text + selectedText, textLink)
                     this.props.setSelRect(pos)
                 }
             } else {
