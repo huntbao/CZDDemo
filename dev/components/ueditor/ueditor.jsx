@@ -8,13 +8,20 @@ import Action from '../../actions/action'
 class UEditor extends React.Component {
 
     componentDidMount() {
-        UE.getEditor('mod-editor')
+        UE.getEditor(this.props.editorId)
+        UE.Editor.prototype.getActionUrl = function(action) {
+            if (action == 'uploadimage') {
+                return this.props.uploadImageUrl
+            } else {
+                return this._bkGetActionUrl.call(this, action)
+            }
+        }
         this.addLawBtn()
     }
 
     render() {
         return (
-            <div id="mod-editor" className="mod-editor"></div>
+            <div id={this.props.editorId} className="mod-editor"></div>
         )
     }
 
@@ -22,7 +29,7 @@ class UEditor extends React.Component {
         UE.registerUI('insertlaw', function(editor, uiName) {
             editor.registerCommand(uiName, {
                 execCommand: function() {
-                    Action.showPanel()
+                    Action.showPanel(this.key)
                 }
             });
             var btn = new UE.ui.Button({

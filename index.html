@@ -5,6 +5,7 @@
 </head>
 <body>
 <div id="main" class="main"></div>
+<div id="main1" class="main"></div>
 <script src="dist/law_search_test_data.js"></script>
 <script src="dist/law_search_test_data_a.js"></script>
 <script src="dist/ueditor/ueditor.config.js"></script>
@@ -12,5 +13,15 @@
 <script src="dist/react-with-addons.min.js"></script>
 <script src="http://localhost:7070/webpack-dev-server.js"></script>
 <script src="http://localhost:7070/assets/index.js" charset="utf-8"></script>
+<script>
+    initEditor({
+        container: 'main',
+        uploadImageUrl: '/uploadapi/image'
+    })
+    initEditor({
+        container: 'main1',
+        uploadImageUrl: '/uploadapi/image'
+    })
+</script>
 </body>
 </html>

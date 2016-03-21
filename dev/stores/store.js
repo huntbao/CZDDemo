@@ -7,16 +7,16 @@ import AppDispatcher from '../dispatcher/dispatcher'
 
 const CHANGE_EVENT = 'change'
 let storeData = {
-    showPanel: false,
+    showPanel: {},
     category: 'law'
 }
 
 let actions = {
-    showPanel() {
-        storeData.showPanel = true;
+    showPanel(options) {
+        storeData.showPanel[options.editorId] = true
     },
-    hidePanel() {
-        storeData.showPanel = false
+    hidePanel(options) {
+        storeData.showPanel[options.editorId] = false
     },
     setCategory(data) {
         storeData.category = data.category
@@ -47,12 +47,12 @@ AppDispatcher.register((action) => {
     switch (action.actionType) {
 
         case AppConstants.SHOW_PANEL:
-            actions.showPanel()
+            actions.showPanel(action.data)
             Store.emitChange()
             break
 
         case AppConstants.HIDE_PANEL:
-            actions.hidePanel()
+            actions.hidePanel(action.data)
             Store.emitChange()
             break
 

@@ -11,9 +11,9 @@ class Index extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = {
+        this.state = Object.assign({
             selRect: null
-        }
+        }, Store.get())
     }
 
     getAppStates() {
@@ -49,10 +49,14 @@ class Index extends React.Component {
         }
         return (
             <div className="main-wrap">
-                <UEditor />
+                <UEditor
+                    editorId={this.props.editorId}
+                    uploadImageUrl={this.props.uploadImageUrl}
+                />
                 <Panel
                     setSelRect={(rect) => {this.setSelRect(rect)}}
-                    show={this.state.showPanel}
+                    show={this.state.showPanel[this.props.editorId]}
+                    editorId={this.props.editorId}
                 />
                 {globalInsert}
             </div>
@@ -66,7 +70,7 @@ class Index extends React.Component {
     }
 
     insertSelText() {
-        let editor = UE.getEditor('mod-editor')
+        let editor = UE.getEditor(this.props.editorId)
         editor.setContent(this.state.selRect.text, !!editor.getContent())
         this.setState({
             selRect: null

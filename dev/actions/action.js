@@ -6,15 +6,21 @@ import AppDispatcher from '../dispatcher/dispatcher'
 
 class Action {
 
-    static showPanel() {
+    static showPanel(editorId) {
         AppDispatcher.dispatch({
-            actionType: AppConstants.SHOW_PANEL
+            actionType: AppConstants.SHOW_PANEL,
+            data: {
+                editorId: editorId
+            }
         })
     }
 
-    static hidePanel() {
+    static hidePanel(editorId) {
         AppDispatcher.dispatch({
-            actionType: AppConstants.HIDE_PANEL
+            actionType: AppConstants.HIDE_PANEL,
+            data: {
+                editorId: editorId
+            }
         })
     }
 

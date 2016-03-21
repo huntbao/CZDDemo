@@ -173,7 +173,7 @@ class List extends React.Component {
     }
 
     insertIntoEditor(htmlMarkup) {
-        let editor = UE.getEditor('mod-editor')
+        let editor = UE.getEditor(this.props.editorId)
         editor.setContent(htmlMarkup, !!editor.getContent())
     }
 
