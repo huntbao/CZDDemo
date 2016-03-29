@@ -65,7 +65,6 @@ class Panel extends React.Component {
                         </button>
                     </div>
                     <List
-                        editorId={this.props.editorId}
                         list={this.state.list}
                         setSelRect={this.props.setSelRect}
                         loadList={(pageOffset) => {this.loadList(pageOffset)}}
@@ -125,7 +124,7 @@ class Panel extends React.Component {
     }
 
     close(e) {
-        Action.hidePanel(this.props.editorId)
+        Action.hidePanel()
     }
 
     toggleLoading(isLoading) {
