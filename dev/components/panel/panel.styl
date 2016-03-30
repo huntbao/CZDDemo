@@ -1,27 +1,29 @@
 //author @huntbao
 .panel-wrap {
   position: absolute;
-  left: 9999px;
-  top: 10px;
+  right: 9999px;
+  top: 150px;
   width: 640px;
   transition: all ease .2s;
 
   &.show {
-    left: 730px;
+    right: 5px;
+    z-index:1000;
+    background:#fff;
   }
 
   .mod-panel {
     border: 1px solid #ccc;
     border-radius: 5px;
-    padding: 20px;
-    height: 570px
+    padding: 25px 20px;
+    height: 820px
     position: relative;
 
     .inp {
       padding: 5px;
       border-radius 3px;
       border: 1px solid #ccc;
-      height: 20px;
+      height: 30px;/* 网站使用了bootstrap，box-sizing: border-box; */
       outline: none;
       margin: 0 1% 0 0;
     }
@@ -32,6 +34,8 @@
       background-color: #06c;
       height: 30px;
       line-height: 28px;
+      vertical-align:top;
+      padding:0;
       border: 0 none;
       color: #fff;
       cursor: pointer;
