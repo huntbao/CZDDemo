@@ -11,12 +11,6 @@ class List extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = {
-            data: [],
-            article: null,
-            initialSelected: 0
-        }
-        this.articleMetadata = null
         this.pageX = null
         this.pageY = null
     }
@@ -90,7 +84,7 @@ class List extends React.Component {
                     containerClassName={"pagination"}
                     subContainerClassName={"pages pagination"}
                     activeClassName={"active"}
-                    initialSelected={this.state.initialSelected}
+                    forceSelected={this.props.pageOffset}
                 />
         }
         return (
@@ -103,21 +97,14 @@ class List extends React.Component {
 
     loadArticle(e, articleMetadata) {
         e.preventDefault()
-        this.articleMetadata = articleMetadata
-        this.props.toggleLoading(true)
-        util.loadArticle(articleMetadata.id, (data) => {
-            this.props.toggleLoading(false)
-            this.setState({
-                article: data
-            })
-        })
+        this.props.loadArticle(articleMetadata)
     }
     
     getArticleNode() {
-        if (this.state.article._code !== '200') {
+        if (this.props.article._code !== '200') {
             return;
         }
-        let article = this.state.article.data
+        let article = this.props.article.data
         let nodes = article.zhangjieVos.map((zj) => {
             let zhangjieNodes = zj.duanlist.map((duan) => {
                 return (
@@ -154,7 +141,7 @@ class List extends React.Component {
 
     render() {
         let contentNode
-        if (this.state.article && this.props.list) {
+        if (this.props.article && this.props.list) {
             contentNode = this.getArticleNode()
         } else {
             contentNode = this.getListNode()
@@ -169,12 +156,9 @@ class List extends React.Component {
     handlePageClick(data) {
         let selected = data.selected;
         // init pagination will call this func, this maybe a bug
-        if (this.state.initialSelected === selected) {
+        if (this.props.pageOffset === selected) {
             return;
         }
-        this.setState({
-            initialSelected: selected
-        })
         this.props.loadList(selected + 1)
     }
 
@@ -195,7 +179,8 @@ class List extends React.Component {
 
     insertIntoEditor(htmlMarkup) {
         let editor = UE.getEditor('mod-editor')
-        editor.setContent(htmlMarkup, !!editor.getContent())
+        editor.focus()
+        editor.execCommand('inserthtml', htmlMarkup)
     }
 
     insertList(list) {
@@ -206,7 +191,7 @@ class List extends React.Component {
     insertArticlePara(article,zhangjie, duan) {
         let text = `${zhangjie.title}<br/>${duan.title}<br/>${duan.content}`
         let textLink = util.HREFS[Store.get().category].base+`${article.id}#${duan.id}`
-        let htmlMarkup = this.getHtmlMarkup(this.articleMetadata, text, textLink)
+        let htmlMarkup = this.getHtmlMarkup(this.props.articleMetadata, text, textLink)
         this.insertIntoEditor(htmlMarkup)
     }
 
@@ -261,7 +246,7 @@ class List extends React.Component {
                 })
                 if (duan) {
                     let textLink = util.HREFS[Store.get().category].base+`${this.state.article.data.source.id}#${duan.id}`
-                    pos.text = this.getHtmlMarkup(this.articleMetadata, text + selectedText, textLink)
+                    pos.text = this.getHtmlMarkup(this.props.articleMetadata, text + selectedText, textLink)
                     this.props.setSelRect(pos)
                 }
             } else {
@@ -277,9 +262,7 @@ class List extends React.Component {
 
     closeArticle(e) {
         e.preventDefault()
-        this.setState({
-            article: null
-        })
+        this.props.closeArticle()
     }
 
 }
