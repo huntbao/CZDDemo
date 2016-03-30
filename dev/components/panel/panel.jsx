@@ -13,6 +13,9 @@ let initState = {
     keyword: '',
     wenhao: '',
     list: null,
+    article: null,
+    articleMetadata: null,
+    pageOffset: 0,
     cate: 'law',
     isLoading: false
 }
@@ -32,12 +35,6 @@ class Panel extends React.Component {
             'panel-wrap': true,
             'show': this.props.show
         })
-        if (!this.props.show) {
-            // if hide panel
-            setTimeout(() => {
-                this.setState(initState)
-            })
-        }
         return (
             <div className={panelWrapClasses + ` ${this.state.cate}`}>
                 <div className={modPanelClasses}>
@@ -66,9 +63,13 @@ class Panel extends React.Component {
                     </div>
                     <List
                         list={this.state.list}
+                        article={this.state.article}
+                        articleMetadata={this.state.articleMetadata}
+                        pageOffset={this.state.pageOffset}
                         setSelRect={this.props.setSelRect}
                         loadList={(pageOffset) => {this.loadList(pageOffset)}}
-                        toggleLoading={(isLoading) => {this.toggleLoading(isLoading)}}
+                        loadArticle={(articleMetadata) => {this.loadArticle(articleMetadata)}}
+                        closeArticle={() => {this.closeArticle()}}
                     />
                     <div className="loading"></div>
                     <div className="close-btn" onClick={(e) => {this.close(e)}}>×</div>
@@ -103,13 +104,35 @@ class Panel extends React.Component {
     }
 
     loadList(pageOffset) {
-        this.setState({isLoading: true}, () => {
+        this.setState({
+            isLoading: true,
+            pageOffset: pageOffset - 1
+        }, () => {
             util.loadList(pageOffset, this.state.keyword, this.state.wenhao, (data) => {
                 this.setState({
                     list: data,
                     isLoading: false
                 })
             })
+        })
+    }
+
+    loadArticle(articleMetadata) {
+        this.toggleLoading(true)
+        util.loadArticle(articleMetadata.id, (data) => {
+            this.toggleLoading(false)
+            this.setState({
+                article: data,
+                articleMetadata: articleMetadata
+            })
+        })
+    }
+
+    closeArticle() {
+        this.setState({
+            article: null,
+            articleMetadata: null,
+            pageOffset: 0
         })
     }
 
@@ -125,6 +148,7 @@ class Panel extends React.Component {
 
     close(e) {
         Action.hidePanel()
+        this.setState(initState)
     }
 
     toggleLoading(isLoading) {
