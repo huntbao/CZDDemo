@@ -9,6 +9,14 @@ class UEditor extends React.Component {
 
     componentDidMount() {
         UE.getEditor('mod-editor')
+        UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+        UE.Editor.prototype.getActionUrl = function(action) {
+            if (action == 'uploadimage') {
+                return IMG_UPLOAD_URL;
+            } else {
+                return this._bkGetActionUrl.call(this, action);
+            }
+        }
         this.addLawBtn()
     }
 
