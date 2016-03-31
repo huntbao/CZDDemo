@@ -235,7 +235,7 @@ class List extends React.Component {
                 }
                 let duan
                 let text = ''
-                this.state.article.data.zhangjieVos.find((zj) => {
+                this.props.article.data.zhangjieVos.find((zj) => {
                     duan = zj.duanlist.find((duan) => {
                         return duan.id === endNodeId
                     })
@@ -245,7 +245,7 @@ class List extends React.Component {
                     }
                 })
                 if (duan) {
-                    let textLink = util.HREFS[Store.get().category].base+`${this.state.article.data.source.id}#${duan.id}`
+                    let textLink = util.HREFS[Store.get().category].base+`${this.props.article.data.source.id}#${duan.id}`
                     pos.text = this.getHtmlMarkup(this.props.articleMetadata, text + selectedText, textLink)
                     this.props.setSelRect(pos)
                 }
