@@ -68,6 +68,7 @@ class Panel extends React.Component {
                         pageOffset={this.state.pageOffset}
                         setSelRect={this.props.setSelRect}
                         loadList={(pageOffset) => {this.loadList(pageOffset)}}
+                        toggleLoading={(isLoading) => {this.toggleLoading(isLoading)}}
                         loadArticle={(articleMetadata) => {this.loadArticle(articleMetadata)}}
                         closeArticle={() => {this.closeArticle()}}
                     />

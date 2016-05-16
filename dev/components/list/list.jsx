@@ -4,6 +4,7 @@
 import './list.styl'
 import React from 'react'
 import ReactPaginate from 'react-paginate'
+import Store from '../../stores/store'
 import util from '../../libs/util'
 
 class List extends React.Component {
@@ -34,21 +35,39 @@ class List extends React.Component {
         let listNodes
         if (list && list.length) {
             listNodes = list.dataList.map((lt) => {
-                return (
-                    <div className="line">
-                        <div className="info">
-                            <span className="wenhao" dangerouslySetInnerHTML={{__html: lt.wenhao}}></span>
-                            <span className="pub-date">颁布日期：{lt.publish_date}</span>
+                if (Store.get().category == 'law') {
+                    return (
+                        <div className="line">
+                            <div className="info">
+                                <span className="wenhao" dangerouslySetInnerHTML={{__html: lt.wenhao}}></span>
+                                <span className="pub-date">颁布日期：{lt.publish_date}</span>
+                            </div>
+                            <a className="title"
+                               dangerouslySetInnerHTML={{__html: lt.title}}
+                               href={util.HREFS[Store.get().category].base + lt.id}
+                               title={lt.title}
+                               onClick={(e) => {this.loadArticle(e, lt)}}
+                            ></a>
+                            <div className="insert" onClick={()=>{this.insertList(lt)}}>插入</div>
                         </div>
-                        <a className="title"
-                           dangerouslySetInnerHTML={{__html: lt.title}}
-                           href={'/fagui/detail/'+lt.id}
-                           title={lt.title}
-                           onClick={(e) => {this.loadArticle(e, lt)}}
-                        ></a>
-                        <div className="insert" onClick={()=>{this.insertList(lt)}}>插入</div>
-                    </div>
-                )
+                    )
+                } else{
+                    return (
+                        <div className="line">
+                            <div className="info">
+                                <span className="bookname" dangerouslySetInnerHTML={{__html: "《" + lt.bookname + "》"}}></span>
+                                <span className="supermodle">所属模块：《{lt.tags}》</span>
+                            </div>
+                            <a className="title"
+                               dangerouslySetInnerHTML={{__html: lt.title}}
+                               href={util.HREFS[Store.get().category].base + lt.id}
+                               title={lt.title}
+                               onClick={(e) => {this.loadArticle(e, lt)}}
+                            ></a>
+                            <div className="insert" onClick={()=>{this.insertList(lt)}}>插入</div>
+                        </div>
+                    )
+                }
             })
         }
         let pagination
@@ -80,7 +99,7 @@ class List extends React.Component {
         e.preventDefault()
         this.props.loadArticle(articleMetadata)
     }
-
+    
     getArticleNode() {
         if (this.props.article._code !== '200') {
             return;
@@ -95,7 +114,7 @@ class List extends React.Component {
                     >
                         <div className="title">{duan.title}</div>
                         <div className="content" dangerouslySetInnerHTML={{__html: duan.content}}></div>
-                        <div className="insert" onClick={()=>{this.insertArticlePara(zj, duan)}}>插入</div>
+                        <div className="insert" onClick={()=>{this.insertArticlePara(article.source,zj, duan)}}>插入</div>
                     </div>
                 )
             })
@@ -112,9 +131,9 @@ class List extends React.Component {
                  onMouseDown={(e) => {this.mouseDown(e)}}
             >
                 <a className="back-btn" onClick={(e) => {this.closeArticle(e)}}>>>返回</a>
-                <a className="article-title" href={article.faguiSource.link}>{article.faguiSource.title}</a>
-                <span className="wenhao">{article.faguiSource.wenhao}</span>
-                <span className="publishDate">{article.faguiSource.publishDate}</span>
+                <a className="article-title" href={article.source.link}>{article.source.title}</a>
+                <span className="wenhao">{article.source.wenhao}</span>
+                <span className="publishDate">{article.source.publishDate}</span>
                 {nodes}
             </div>
         )
@@ -145,21 +164,22 @@ class List extends React.Component {
 
     getHtmlMarkup(list, text, textLink) {
         let htmlMarkup = `<p style="padding:4px;background-color:#e5e5e5;margin:0 0 4px;">`
-        htmlMarkup += `<a style="color:#5f86bd" href=${'/fagui/detail/' + list.id}>${list.title}</a>&nbsp;&nbsp;`
-        htmlMarkup += `<span>${list.publish_date}</span>&nbsp;&nbsp;`
-        htmlMarkup += `<span style="color:#00b70f;">${list.jiedu_count}解读</span>&nbsp;&nbsp;`
-        htmlMarkup += `<span style="color:#00b70f;">${list.fagui_status}问答</span>`
-        if (text) {
-            htmlMarkup += `<br/>${text}<a style="color:#5f86bd" href=${textLink}>前往>></a>`
+        htmlMarkup += `<a style="color:#5f86bd" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${list.title}</a>&nbsp;&nbsp;`
+        if (list.publish_date) {
+            htmlMarkup += `<span>${list.publish_date}</span>&nbsp;&nbsp;`
         }
-        htmlMarkup += `</p>`
+        htmlMarkup += `<span style="color:#00b70f;">${list.jiedu_count}解读</span>&nbsp;&nbsp;`
+        htmlMarkup += `<span style="color:#00b70f;">${list.wenda_count}问答</span>`
+        if (text) {
+            htmlMarkup += `<br/>${text}<a style="color:#5f86bd" target="_blank" href=${textLink}>前往>></a>`
+        }
+        htmlMarkup += `</p><br/>`
         return htmlMarkup
     }
 
     insertIntoEditor(htmlMarkup) {
         let editor = UE.getEditor('mod-editor')
         editor.focus()
-        //editor.setContent(htmlMarkup, !!editor.getContent())
         editor.execCommand('inserthtml', htmlMarkup)
     }
 
@@ -168,9 +188,9 @@ class List extends React.Component {
         this.insertIntoEditor(htmlMarkup)
     }
 
-    insertArticlePara(zhangjie, duan) {
+    insertArticlePara(article,zhangjie, duan) {
         let text = `${zhangjie.title}<br/>${duan.title}<br/>${duan.content}`
-        let textLink = `/fagui/detail/${duan.id}`
+        let textLink = util.HREFS[Store.get().category].base+`${article.id}#${duan.id}`
         let htmlMarkup = this.getHtmlMarkup(this.props.articleMetadata, text, textLink)
         this.insertIntoEditor(htmlMarkup)
     }
@@ -215,7 +235,7 @@ class List extends React.Component {
                 }
                 let duan
                 let text = ''
-                this.state.article.data.zhangjieVos.find((zj) => {
+                this.props.article.data.zhangjieVos.find((zj) => {
                     duan = zj.duanlist.find((duan) => {
                         return duan.id === endNodeId
                     })
@@ -225,7 +245,7 @@ class List extends React.Component {
                     }
                 })
                 if (duan) {
-                    let textLink = `/fagui/detail/${duan.id}`
+                    let textLink = util.HREFS[Store.get().category].base+`${this.props.article.data.source.id}#${duan.id}`
                     pos.text = this.getHtmlMarkup(this.props.articleMetadata, text + selectedText, textLink)
                     this.props.setSelRect(pos)
                 }
