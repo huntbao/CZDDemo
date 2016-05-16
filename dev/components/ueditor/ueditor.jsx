@@ -9,12 +9,12 @@ class UEditor extends React.Component {
 
     componentDidMount() {
         UE.getEditor('mod-editor')
-        UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+        UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl
         UE.Editor.prototype.getActionUrl = function(action) {
             if (action == 'uploadimage') {
-                return IMG_UPLOAD_URL;
+                return IMG_UPLOAD_URL
             } else {
-                return this._bkGetActionUrl.call(this, action);
+                return this._bkGetActionUrl.call(this, action)
             }
         }
         this.addLawBtn()
@@ -32,27 +32,27 @@ class UEditor extends React.Component {
                 execCommand: function() {
                     Action.showPanel()
                 }
-            });
+            })
             var btn = new UE.ui.Button({
                 name: uiName,
                 title: '插入法规',
-                cssRules: `background: url(${window.UEDITOR_CONFIG.UEDITOR_HOME_URL}/law.png) no-repeat 50% 50% !important;`,
+                cssRules: `background: url(${window.UEDITOR_CONFIG.UEDITOR_HOME_URL}/law.png) no-repeat 50% 50% !important`,
                 onclick: function() {
-                    editor.execCommand(uiName);
+                    editor.execCommand(uiName)
                 }
-            });
+            })
             editor.addListener('selectionchange', function() {
-                var state = editor.queryCommandState(uiName);
+                var state = editor.queryCommandState(uiName)
                 if (state == -1) {
-                    btn.setDisabled(true);
-                    btn.setChecked(false);
+                    btn.setDisabled(true)
+                    btn.setChecked(false)
                 } else {
-                    btn.setDisabled(false);
-                    btn.setChecked(state);
+                    btn.setDisabled(false)
+                    btn.setChecked(state)
                 }
-            });
-            return btn;
-        });
+            })
+            return btn
+        })
     }
 
 }
