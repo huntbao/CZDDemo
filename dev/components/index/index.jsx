@@ -55,6 +55,12 @@ class Index extends React.Component {
                     show={this.state.showPanel}
                 />
                 {globalInsert}
+                <div className="edui-default">
+                    <div className="edui-toolbar">
+                        <div className="emotion" id="emotion"></div>
+                        <div className="simpleupload" id="simpleupload"></div>
+                    </div>
+                </div>
             </div>
         )
     }

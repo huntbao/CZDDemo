@@ -8,9 +8,9 @@ import Action from '../../actions/action'
 class UEditor extends React.Component {
 
     componentDidMount() {
-        UE.getEditor('mod-editor')
+        let editor = UE.getEditor('mod-editor')
         UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl
-        UE.Editor.prototype.getActionUrl = function(action) {
+        UE.Editor.prototype.getActionUrl = function (action) {
             if (action == 'uploadimage') {
                 return IMG_UPLOAD_URL
             } else {
@@ -18,6 +18,10 @@ class UEditor extends React.Component {
             }
         }
         this.addLawBtn()
+        editor.addListener('ready', () => {
+            document.querySelector('#emotion').appendChild(document.querySelectorAll('.edui-for-emotion')[0])
+            document.querySelector('#simpleupload').appendChild(document.querySelectorAll('.edui-for-simpleupload')[0])
+        });
     }
 
     render() {
@@ -27,9 +31,9 @@ class UEditor extends React.Component {
     }
 
     addLawBtn() {
-        UE.registerUI('insertlaw', function(editor, uiName) {
+        UE.registerUI('insertlaw', function (editor, uiName) {
             editor.registerCommand(uiName, {
-                execCommand: function() {
+                execCommand: function () {
                     Action.showPanel()
                 }
             })
@@ -37,11 +41,11 @@ class UEditor extends React.Component {
                 name: uiName,
                 title: '插入法规',
                 cssRules: `background: url(${window.UEDITOR_CONFIG.UEDITOR_HOME_URL}/law.png) no-repeat 50% 50% !important`,
-                onclick: function() {
+                onclick: function () {
                     editor.execCommand(uiName)
                 }
             })
-            editor.addListener('selectionchange', function() {
+            editor.addListener('selectionchange', function () {
                 var state = editor.queryCommandState(uiName)
                 if (state == -1) {
                     btn.setDisabled(true)
