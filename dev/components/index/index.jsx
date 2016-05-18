@@ -73,7 +73,8 @@ class Index extends React.Component {
 
     insertSelText() {
         let editor = UE.getEditor('mod-editor')
-        editor.setContent(this.state.selRect.text, !!editor.getContent())
+        //editor.setContent(this.state.selRect.text, !!editor.getContent())
+        editor.execCommand('inserthtml', this.state.selRect.text)
         this.setState({
             selRect: null
         })

@@ -9,7 +9,8 @@ import Store from '../stores/store'
 
 
 
-const BASE_URL = 'http://127.0.0.1:8080/';
+//const BASE_URL = 'http://127.0.0.1:8080/';
+const BASE_URL = 'http://www.5czd.cn/';
 
 const URLS = {
     law: {
