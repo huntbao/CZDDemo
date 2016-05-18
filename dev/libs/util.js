@@ -7,25 +7,26 @@ import QueryString from 'querystring'
 import JSONP from 'jsonp'
 import Store from '../stores/store'
 
+
+
+const BASE_URL = 'http://127.0.0.1:8080/';
+
 const URLS = {
     law: {
-        list: 'http://127.0.0.1:8080/api/law_search',
-        article: 'http://127.0.0.1:8080/api/fagui_content'
+        list: BASE_URL + 'api/law_search',
+        article: BASE_URL + 'api/fagui_content'
     },
     theory: {
-        list: 'http://127.0.0.1:8080/api/th_search',
-        article: 'http://127.0.0.1:8080/api/theory_detail'
-    },
-    favorite: {
-
+        list: BASE_URL + 'api/th_search',
+        article: BASE_URL + 'api/theory_detail'
     },
     qa: {
-
+        list: BASE_URL + 'api/editor_wenda_search'
+    },
+    case: {
+        list: BASE_URL + 'api/ccase_search'
     }
-}
-
-
-
+};
 
 let Util = {
 
@@ -33,8 +34,12 @@ let Util = {
         let url = URLS[Store.get().category].list
         if (Store.get().category == 'law') {
             var params = QueryString.stringify({page: page, query1: keyword, query2: wenhao});
-        } else {
+        } else if (Store.get().category == 'theory') {
             var params = QueryString.stringify({page: page, key: keyword});
+        } else if (Store.get().category == 'qa')  {
+            var params = QueryString.stringify({keyword: keyword, currentPage: page});
+        } else {
+            var params = QueryString.stringify({sarchParam: keyword, page: page});
         }
         JSONP(`${url}?${params}`, {}, function (err, data) {
             cb(data)
@@ -56,12 +61,19 @@ let Util = {
     },
 
     HREFS: {
-        law: {
-            base: '/fagui/detail/'
+        law: {  
+            base: BASE_URL + 'fagui/detail/'
         },
         theory: {
-            base: '/lilun/detail/'
-        }
+            base: BASE_URL + 'lilun/detail/'
+        },
+        qa: {
+            base: BASE_URL + 'wenda/question_detail/'
+        },
+        case: {
+            base: BASE_URL + 'ccase/detail/'
+        },
+        cardURL: BASE_URL
     }
 
 }
