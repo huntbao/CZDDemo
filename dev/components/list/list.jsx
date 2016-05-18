@@ -31,9 +31,13 @@ class List extends React.Component {
             return this.getListTip(list.message)
         }
         list = list.data;
+        //查询无结果提示
+        if (!list.dataList.length) {
+            return this.getListTip('您查找的内容不存在！')
+        }
         let pageNum = Math.ceil(list.total / list.pageSize)
         let listNodes
-        if (list && list.length) {
+        if (list && list.dataList.length) {
             listNodes = list.dataList.map((lt) => {
                 if (Store.get().category == 'law') {
                     return (
@@ -51,7 +55,7 @@ class List extends React.Component {
                             <div className="insert" onClick={()=>{this.insertList(lt)}}>插入</div>
                         </div>
                     )
-                } else{
+                } else if (Store.get().category == 'theory'){
                     return (
                         <div className="line">
                             <div className="info">
@@ -63,6 +67,36 @@ class List extends React.Component {
                                href={util.HREFS[Store.get().category].base + lt.id}
                                title={lt.title}
                                onClick={(e) => {this.loadArticle(e, lt)}}
+                            ></a>
+                            <div className="insert" onClick={()=>{this.insertList(lt)}}>插入</div>
+                        </div>
+                    )
+                } else if (Store.get().category == 'qa') {
+                    return (
+                        <div className="line">
+                            <div className="info">
+                                <span className="bookname">{lt.createUserName}</span>
+                                <span className="q-time">提问时间：{lt.createTimeStr}</span>
+                            </div>
+                            <a className="title"
+                               dangerouslySetInnerHTML={{__html: lt.title}}
+                               href={util.HREFS[Store.get().category].base + lt.id + '_1_false'}
+                               title={lt.title}
+                            ></a>
+                            <div className="insert" onClick={()=>{this.insertList(lt)}}>插入</div>
+                        </div>
+                    )
+                } else {
+                    return (
+                        <div className="line">
+                            <div className="info">
+                                <span className="bookname">公司：{lt.companyAbbreviationName}</span>
+                                <span className="q-time">成文时间：{lt.dateStr}</span>
+                            </div>
+                            <a className="title"
+                               dangerouslySetInnerHTML={{__html: lt.title}}
+                               href={util.HREFS[Store.get().category].base + lt.id}
+                               title={lt.title}
                             ></a>
                             <div className="insert" onClick={()=>{this.insertList(lt)}}>插入</div>
                         </div>
@@ -112,7 +146,6 @@ class List extends React.Component {
                         className="para"
                         id={duan.id}
                     >
-                        <div className="title">{duan.title}</div>
                         <div className="content" dangerouslySetInnerHTML={{__html: duan.content}}></div>
                         <div className="insert" onClick={()=>{this.insertArticlePara(article.source,zj, duan)}}>插入</div>
                     </div>
@@ -163,17 +196,26 @@ class List extends React.Component {
     }
 
     getHtmlMarkup(list, text, textLink) {
-        let htmlMarkup = `<p style="padding:4px;background-color:#e5e5e5;margin:0 0 4px;">`
-        htmlMarkup += `<a style="color:#5f86bd" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${list.title}</a>&nbsp;&nbsp;`
-        if (list.publish_date) {
-            htmlMarkup += `<span>${list.publish_date}</span>&nbsp;&nbsp;`
+        let title = list.title.replace("<font color='red'>",'')
+        title = title.replace('</font>','')
+        let htmlMarkup = `<span style="line-height:1.4em;padding:4px;margin:0 0 4px;">`
+        if ( Store.get().category == 'law' ) {
+            htmlMarkup += `<a style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}&nbsp;<img class="item-name" card-data-id=${list.id} card-data-type="2" src= ${util.HREFS["cardURL"] + "images/item-card.png"}></a>&nbsp;`
         }
-        htmlMarkup += `<span style="color:#00b70f;">${list.jiedu_count}解读</span>&nbsp;&nbsp;`
-        htmlMarkup += `<span style="color:#00b70f;">${list.wenda_count}问答</span>`
+        if ( Store.get().category == 'theory' ) {
+            htmlMarkup += `<a style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}&nbsp;<img class="item-name" card-data-id=${list.id} card-data-type="5" src= ${util.HREFS["cardURL"] + "images/item-card.png"}></a>&nbsp;`
+        }
+        if ( Store.get().category == 'qa' ) {
+            htmlMarkup += `<a style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id + '_1_false'}>${title}&nbsp;<img style="vertical-align:baseline;" src= ${util.HREFS["cardURL"] + "images/qa-card.png"}></a>&nbsp;`
+        }
+        if ( Store.get().category == 'case' ) {
+            htmlMarkup += `<a style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}</a>&nbsp;`
+        }
+        
         if (text) {
-            htmlMarkup += `<br/>${text}<a style="color:#5f86bd" target="_blank" href=${textLink}>前往>></a>`
+            htmlMarkup += `${text}`
         }
-        htmlMarkup += `</p><br/>`
+        htmlMarkup += `</span>`
         return htmlMarkup
     }
 
@@ -189,8 +231,8 @@ class List extends React.Component {
     }
 
     insertArticlePara(article,zhangjie, duan) {
-        let text = `${zhangjie.title}<br/>${duan.title}<br/>${duan.content}`
-        let textLink = util.HREFS[Store.get().category].base+`${article.id}#${duan.id}`
+        let textLink = util.HREFS[Store.get().category].base+`${article.id}#quanwen_${zhangjie.id}`
+        let text = `&gt;<a style=\"color:#4474b7;text-decoration:none;background-color:#eaf6fc;\" target=\"_blank\" href=${textLink}>${zhangjie.title}</a>&gt;范围\“<span style=\"background-color:#eaf6fc;\">${duan.content}</span>\”`
         let htmlMarkup = this.getHtmlMarkup(this.props.articleMetadata, text, textLink)
         this.insertIntoEditor(htmlMarkup)
     }
@@ -201,6 +243,7 @@ class List extends React.Component {
         setTimeout(() => {
             let sel = window.getSelection()
             let selectedText = sel.toString().trim()
+            selectedText = '<span style="background-color:#eaf6fc;">' + selectedText + '</span>' + '”'
             let clientRect
             let endNodeId
             if (selectedText) {
@@ -240,7 +283,8 @@ class List extends React.Component {
                         return duan.id === endNodeId
                     })
                     if (duan) {
-                        text = `${zj.title}<br/>${duan.title}<br/>`
+                        let textLink = util.HREFS[Store.get().category].base+`${this.props.article.data.source.id}#${duan.id}`
+                        text = `&gt;<a style=\"color:#4474b7;text-decoration:none;background-color:#eaf6fc;\" target=\"_blank\" href= ${textLink}>${zj.title}</a>&gt;范围\“`
                         return true
                     }
                 })
