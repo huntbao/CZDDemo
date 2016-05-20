@@ -139,7 +139,13 @@ class Panel extends React.Component {
     clickCategory(e, cate) {
         this.setState({
             cate: cate,
-            list: null
+            keyword: '',
+            wenhao: '',
+            list: null,
+            article: null,
+            articleMetadata: null,
+            pageOffset: 0,
+            isLoading: false
         })
         Action.setCategory({
             category: cate
