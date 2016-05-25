@@ -196,8 +196,7 @@ class List extends React.Component {
     }
 
     getHtmlMarkup(list, text, textLink) {
-        let title = list.title.replace("<font color='red'>",'')
-        title = title.replace('</font>','')
+        let title = list.title.replace(/<.*?>/g,'')
         let htmlMarkup = `<span style="line-height:1.4em;padding:4px;margin:0 0 4px;">`
         if ( Store.get().category == 'law' ) {
             htmlMarkup += `<a style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}&nbsp;<img class="item-name" card-data-id=${list.id} card-data-type="2" src= ${util.HREFS["cardURL"] + "images/item-card.png"}></a>&nbsp;`
