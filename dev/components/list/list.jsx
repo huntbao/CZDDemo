@@ -210,10 +210,10 @@ class List extends React.Component {
         if ( Store.get().category == 'case' ) {
             htmlMarkup += `<a style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}</a>&nbsp;`
         }
-        
         if (text) {
             htmlMarkup += `${text}`
         }
+        
         htmlMarkup += `</span>`
         return htmlMarkup
     }
