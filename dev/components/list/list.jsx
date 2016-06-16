@@ -86,12 +86,28 @@ class List extends React.Component {
                             <div className="insert" onClick={()=>{this.insertList(lt)}}>插入</div>
                         </div>
                     )
-                } else {
+                } else if (Store.get().category == 'case') {
                     return (
                         <div className="line">
                             <div className="info">
                                 <span className="bookname">公司：{lt.companyAbbreviationName}</span>
                                 <span className="q-time">成文时间：{lt.dateStr}</span>
+                            </div>
+                            <a className="title"
+                               dangerouslySetInnerHTML={{__html: lt.title}}
+                               href={util.HREFS[Store.get().category].base + lt.id}
+                               title={lt.title}
+                               onClick={(e) => {this.loadArticle(e, lt)}}
+                            ></a>
+                            <div className="insert" onClick={()=>{this.insertList(lt)}}>插入</div>
+                        </div>
+                    )
+                } else {
+                    return (
+                        <div className="line">
+                            <div className="info">
+                                <span className="bookname">作者：{lt.createusername}</span>
+                                <span className="q-time">发布时间：{lt.dateStr}</span>
                             </div>
                             <a className="title"
                                dangerouslySetInnerHTML={{__html: lt.title}}
@@ -197,24 +213,49 @@ class List extends React.Component {
 
     getHtmlMarkup(list, text, textLink) {
         let title = list.title.replace(/<.*?>/g,'')
-        let htmlMarkup = `<span style="line-height:1.4em;padding:4px;margin:0 0 4px;">`
+        let htmlMarkup = `<span class="editor-insert" style="line-height:1.4em;padding:4px 0;margin:0 0 4px;">`
         if ( Store.get().category == 'law' ) {
-            htmlMarkup += `<a style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}&nbsp;<img class="item-name" card-data-id=${list.id} card-data-type="2" src= ${util.HREFS["cardURL"] + "images/item-card.png"}></a>&nbsp;`
+            htmlMarkup += `<a class="first-level" data-insert-classify="law" data-articleId=${list.id} style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}&nbsp;<img class="item-name editor-insert-card" card-data-id=${list.id} card-data-type="2" src= ${util.HREFS["cardURL"] + "images/item-card.png"}></a>&nbsp;`
         }
         if ( Store.get().category == 'theory' ) {
-            htmlMarkup += `<a style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}&nbsp;<img class="item-name" card-data-id=${list.id} card-data-type="5" src= ${util.HREFS["cardURL"] + "images/item-card.png"}></a>&nbsp;`
+            htmlMarkup += `<a class="first-level" data-insert-classify="theory" data-articleId=${list.id} style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}&nbsp;<img class="item-name editor-insert-card" card-data-id=${list.id} card-data-type="5" src= ${util.HREFS["cardURL"] + "images/item-card.png"}></a>&nbsp;`
         }
-        if ( Store.get().category == 'qa' ) {
-            htmlMarkup += `<a style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id + '_1_false'}>${title}&nbsp;<img style="vertical-align:baseline;" src= ${util.HREFS["cardURL"] + "images/qa-card.png"}></a>&nbsp;`
+        if ( Store.get().category == 'qa' ) { 
+            htmlMarkup += `<a class="first-level" data-insert-classify="qa" data-articleId=${list.id} style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id + '_1_false'}>${title}&nbsp;<img class="editor-insert-card" card-data-id=${list.id} card-data-type="3" style="vertical-align:baseline;" src= ${util.HREFS["cardURL"] + "images/qa-card.png"}></a>&nbsp;`
         }
         if ( Store.get().category == 'case' ) {
-            htmlMarkup += `<a style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}</a>&nbsp;`
+            htmlMarkup += `<a class="first-level" data-insert-classify="case" data-articleId=${list.id} style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}<img class="item-name editor-insert-card" card-data-id=${list.id} card-data-type="4" src= ${util.HREFS["cardURL"] + "images/item-card.png"}></a>&nbsp;`
         }
+        if ( Store.get().category == 'article' ) {
+            htmlMarkup += `<a class="first-level" data-insert-classify="article" data-articleId=${list.id} style="color:#4474b7;text-decoration:none;background-color:#eaf6fc;" target="_blank" href= ${util.HREFS[Store.get().category].base + list.id}>${title}</a>&nbsp;`
+        }
+        
         if (text) {
             htmlMarkup += `${text}`
         }
         
-        htmlMarkup += `</span>`
+        let insertType //插入内容对应的引用类型
+        
+        if (htmlMarkup.includes('data-insert-classify="law"') && !htmlMarkup.includes('class="third-level"')){
+            insertType = 1 //代表插入的是法规标题
+        }
+        if (htmlMarkup.includes('data-insert-classify="law"') && htmlMarkup.includes('class="third-level"')){
+            insertType = 3 //代表插入的是法规段落
+        }
+        if (htmlMarkup.includes('data-insert-classify="theory"') && !htmlMarkup.includes('class="third-level"')){
+            insertType = 4 //代表插入的是理论标题
+        }
+        if (htmlMarkup.includes('data-insert-classify="theory"') && htmlMarkup.includes('class="third-level"')){
+            insertType = 6 //代表插入的是理论段落
+        }
+        if (htmlMarkup.includes('data-insert-classify="case"') && !htmlMarkup.includes('class="third-level"')){
+            insertType = 7 //代表插入的是案例标题
+        }
+        if (htmlMarkup.includes('data-insert-classify="case"') && htmlMarkup.includes('class="third-level"')){
+            insertType = 9 //代表插入的是案例段落
+        }
+
+        htmlMarkup += `<span class="editor-get-type" data-insertType=${insertType}></span></span>`
         return htmlMarkup
     }
 
@@ -231,7 +272,7 @@ class List extends React.Component {
 
     insertArticlePara(article,zhangjie, duan) {
         let textLink = util.HREFS[Store.get().category].base+`${article.id}#quanwen_${zhangjie.id}`
-        let text = `&gt;<a style=\"color:#4474b7;text-decoration:none;background-color:#eaf6fc;\" target=\"_blank\" href=${textLink}>${zhangjie.title}</a>&gt;范围\“<span style=\"background-color:#eaf6fc;\">${duan.content}</span>\”`
+        let text = `&gt;<a class="second-level" data-zhangId=${zhangjie.id} style=\"color:#4474b7;text-decoration:none;background-color:#eaf6fc;\" target=\"_blank\" href=${textLink}>${zhangjie.title}</a>&gt;范围\“<span class="third-level" data-duanId=${duan.id} style=\"background-color:#eaf6fc;\">${duan.content}</span>\”`
         let htmlMarkup = this.getHtmlMarkup(this.props.articleMetadata, text, textLink)
         this.insertIntoEditor(htmlMarkup)
     }
@@ -242,7 +283,7 @@ class List extends React.Component {
         setTimeout(() => {
             let sel = window.getSelection()
             let selectedText = sel.toString().trim()
-            selectedText = '<span style="background-color:#eaf6fc;">' + selectedText + '</span>' + '”'
+            selectedText = selectedText + '</span>' + '”'
             let clientRect
             let endNodeId
             if (selectedText) {
@@ -283,7 +324,7 @@ class List extends React.Component {
                     })
                     if (duan) {
                         let textLink = util.HREFS[Store.get().category].base+`${this.props.article.data.source.id}#${duan.id}`
-                        text = `&gt;<a style=\"color:#4474b7;text-decoration:none;background-color:#eaf6fc;\" target=\"_blank\" href= ${textLink}>${zj.title}</a>&gt;范围\“`
+                        text = `&gt;<a class="second-level" data-zhangId=${zj.id} style=\"color:#4474b7;text-decoration:none;background-color:#eaf6fc;\" target=\"_blank\" href= ${textLink}>${zj.title}</a>&gt;范围\“<span class="third-level" data-duanId=${duan.id} style="background-color:#eaf6fc;">`
                         return true
                     }
                 })
