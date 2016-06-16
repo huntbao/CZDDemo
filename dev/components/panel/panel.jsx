@@ -42,6 +42,7 @@ class Panel extends React.Component {
                     <div className="btn theory" onClick={(e) => {this.clickCategory(e, 'theory')}}>理论</div>
                     <div className="btn qa" onClick={(e) => {this.clickCategory(e, 'qa')}}>问答</div>
                     <div className="btn case" onClick={(e) => {this.clickCategory(e, 'case')}}>案例</div>
+                    <div className="btn article" onClick={(e) => {this.clickCategory(e, 'article')}}>文章</div>
                 </div>
                 <div className={modPanelClasses}>
                     <div className="search-wrap">
