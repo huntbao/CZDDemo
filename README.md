@@ -19,4 +19,8 @@ CZDDEMO
 
 npm run deploy
 
+## 分支说明
+single-editor分支为czd首页使用的编辑器，master为其他处使用的编辑器
+
+两者的区别在于components/index和components/ueditor中的内容略有不同
 
