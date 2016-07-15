@@ -4,6 +4,7 @@
 import Events from 'events'
 import AppConstants from '../constants/constants'
 import AppDispatcher from '../dispatcher/dispatcher'
+import objectAssign from 'object-assign'
 
 const CHANGE_EVENT = 'change'
 let storeData = {
@@ -23,7 +24,7 @@ let actions = {
     }
 }
 
-let Store = Object.assign({}, Events.EventEmitter.prototype, {
+let Store = objectAssign({}, Events.EventEmitter.prototype, {
 
     get() {
         return storeData

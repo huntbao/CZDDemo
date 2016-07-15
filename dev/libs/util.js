@@ -9,8 +9,9 @@ import Store from '../stores/store'
 
 
 
+const BASE_URL = 'http://www.5czd.com/';
+//const BASE_URL = 'http://www.5czd.cn/';
 //const BASE_URL = 'http://127.0.0.1:8080/';
-const BASE_URL = 'http://www.5czd.cn/';
 
 const URLS = {
     law: {
@@ -25,7 +26,11 @@ const URLS = {
         list: BASE_URL + 'api/editor_wenda_search'
     },
     case: {
-        list: BASE_URL + 'api/ccase_search'
+        list: BASE_URL + 'api/ccase_search',
+        article: BASE_URL + 'api/ccase_detail'
+    },
+    article: {
+        list: BASE_URL + 'api/article_search'
     }
 };
 
@@ -39,6 +44,8 @@ let Util = {
             var params = QueryString.stringify({page: page, key: keyword});
         } else if (Store.get().category == 'qa')  {
             var params = QueryString.stringify({keyword: keyword, currentPage: page});
+        } else if (Store.get().category == 'case') {
+            var params = QueryString.stringify({sarchParam: keyword, page: page});
         } else {
             var params = QueryString.stringify({sarchParam: keyword, page: page});
         }
@@ -52,8 +59,10 @@ let Util = {
         let url = URLS[Store.get().category].article
         if (Store.get().category == 'law') {
             var params = QueryString.stringify({faguiId: articleId});
-        } else {
+        } else if (Store.get().category == 'theory') {
             var params = QueryString.stringify({theoryId: articleId});
+        } else if (Store.get().category == 'case') {
+            var params = QueryString.stringify({caseId: articleId});
         }
         JSONP(`${url}?${params}`, {}, function (err, data) {
             cb(data)
@@ -73,6 +82,9 @@ let Util = {
         },
         case: {
             base: BASE_URL + 'ccase/detail/'
+        },
+        article: {
+            base: BASE_URL + 'article/detail/'
         },
         cardURL: BASE_URL
     }

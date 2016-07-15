@@ -56,9 +56,15 @@ class Index extends React.Component {
                 />
                 {globalInsert}
                 <div className="edui-default">
-                    <div className="edui-toolbar">
-                        <div className="emotion" id="emotion"></div>
-                        <div className="simpleupload" id="simpleupload"></div>
+                    <div className="edui-toolbar clearfix">
+                        <span id="kind-emotion"><span className="emotion" id="emotion"></span></span>
+                        <span id="kind-simpleupload"><span className="simpleupload" id="simpleupload"></span></span>
+                        <span id="kind-library">知识库</span>
+                        <a href="/article/createinit"><span id="kind-article">长文</span></a>
+                        <div className="btns">
+	       	 				<button className="btn-czd-cancel js-duanwen-cancel">取消</button>
+	       	 				<button className="btn-czd-submit js-duanwen-submit">发&nbsp;布</button>
+	       	   			</div>
                     </div>
                 </div>
             </div>
